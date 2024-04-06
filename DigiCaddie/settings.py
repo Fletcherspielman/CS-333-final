@@ -31,7 +31,7 @@ if USE_S3:
     SECURE_HSTS_SECONDS = 15768000
 else:
     SECRET_KEY = 'django-insecure-a6@2i3$6sh^63d9m664mma@112)xs@7o7b79p*75$p-6-vpy5o'
-    DEBUG = True
+    DEBUG = False
     # ^nwz!y=%4&@n_u)kkgfh$ylavyk2lnag=&idw^4-y^slzxls3(
 # SECURITY WARNING: don't run with debug turned on in production!
 
