@@ -1,0 +1,81 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.course_name }} Scorecard: </title>
+</head>
+<body>
+    <div class="container flex">
+        <h1 class="text-center">{{ course.course_name }} Scorecard: </h1>
+        <table class="table table-bordered card-bodyish">
+            <thead>
+                <tr>
+                    <th scope="col">Hole</th>
+                    <th scope="col">1</th>
+                    <th scope="col">2</th>
+                    <th scope="col">3</th>
+                    <th scope="col">4</th>
+                    <th scope="col">5</th>
+                    <th scope="col">6</th>
+                    <th scope="col">7</th>
+                    <th scope="col">8</th>
+                    <th scope="col">9</th>
+                    <th scope="col">10</th>
+                    <th scope="col">11</th>
+                    <th scope="col">12</th>
+                    <th scope="col">13</th>
+                    <th scope="col">14</th>
+                    <th scope="col">15</th>
+                    <th scope="col">16</th>
+                    <th scope="col">17</th>
+                    <th scope="col">18</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr>
+                    <th scope="row">Par</th>
+                    {% for hole in allHoles %}
+                        <th>{{ hole.par_number }}</th>
+                    {% endfor %}
+                    <th>72</th>
+                </tr>
+                <tr>
+                    <th>Yardage</th>
+                    {% for hole in allHoles %}
+                        <th>{{ hole.yardage }}</th>
+                    {% endfor %}
+                    <th>{{ totalYardage }}</th>
+                </tr>
+                <tr>
+                    <th>Handicap</th>
+                    {% for hole in allHoles %}
+                        <th>{{ hole.handicap }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th>Score</th>
+                    <th>{{ score.hole_1 }}</th>
+                    <th>{{ score.hole_2 }}</th>
+                    <th>{{ score.hole_3 }}</th>
+                    <th>{{ score.hole_4 }}</th>
+                    <th>{{ score.hole_5 }}</th>
+                    <th>{{ score.hole_6 }}</th>
+                    <th>{{ score.hole_7 }}</th>
+                    <th>{{ score.hole_8 }}</th>
+                    <th>{{ score.hole_9 }}</th>
+                    <th>{{ score.hole_10 }}</th>
+                    <th>{{ score.hole_11 }}</th>
+                    <th>{{ score.hole_12 }}</th>
+                    <th>{{ score.hole_13 }}</th>
+                    <th>{{ score.hole_14 }}</th>
+                    <th>{{ score.hole_15 }}</th>
+                    <th>{{ score.hole_16 }}</th>
+                    <th>{{ score.hole_17 }}</th>
+                    <th>{{ score.hole_18 }}</th>
+                    <th>{{ score.round_total }}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>

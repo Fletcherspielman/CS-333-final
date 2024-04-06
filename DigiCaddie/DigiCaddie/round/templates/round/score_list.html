@@ -1,0 +1,133 @@
+{% extends "round/base.html" %}
+
+
+{% block content %}
+{% load bootstrap_icons %}
+{% load static %}
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorecards: </title>
+</head>
+<body>
+    <div>
+        <form method="GET">
+            <button type="submit" name="sort" value="ascDate" class="btn-post-but-padding">Sort by Date (Ascending)</button>
+            <button type="submit" name="sort" value="descDate" class="btn-post-but-padding">Sort by Date (Descending)</button>
+            <button type="submit" name="sort" value="ascScore" class="btn-post-but-padding">Sort by Score(Ascending)</button>
+            <button type="submit" name="sort" value="descScore" class="btn-post-but-padding">Sort by Score(Descending)</button>
+        </form>
+    </div>
+    {% for score_detail in score_details %}
+    {% with forloop.counter as index %}
+    <div class="card mb-3 padding: 0.5rem 0.5rem; margin-top:1rem;">
+        <div class="card-table-round">
+            {{ score_detail.score.datetime_played }}
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">{{ score_detail.course_name }}</h5>
+            <div class="container">
+                <table class="table table-bordered card-body">
+                    <thead>
+                        <tr>
+                            <th scope="col">Hole</th>
+                            <th scope="col">1</th>
+                            <th scope="col">2</th>
+                            <th scope="col">3</th>
+                            <th scope="col">4</th>
+                            <th scope="col">5</th>
+                            <th scope="col">6</th>
+                            <th scope="col">7</th>
+                            <th scope="col">8</th>
+                            <th scope="col">9</th>
+                            <th scope="col">10</th>
+                            <th scope="col">11</th>
+                            <th scope="col">12</th>
+                            <th scope="col">13</th>
+                            <th scope="col">14</th>
+                            <th scope="col">15</th>
+                            <th scope="col">16</th>
+                            <th scope="col">17</th>
+                            <th scope="col">18</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        <tr>
+                            <th scope="row">Par</th>
+                            {% for hole_detail in score_detail.hole_details %}
+                                <th>{{ hole_detail.par_number }}</th>
+                            {% endfor %}
+                            <th>{{ score_detail.total_par }}</th>
+                        </tr>
+                        <tr>
+                            <th>Yardage</th>
+                            {% for hole_detail in score_detail.hole_details %}
+                                <th>{{ hole_detail.yardage }}</th>
+                            {% endfor %}
+                            <th>{{ score_detail.total_yardage }}</th>
+                        </tr>
+                        <tr>
+                            <th>Handicap</th>
+                            {% for hole_detail in score_detail.hole_details %}
+                                <th>{{ hole_detail.handicap }}</th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <th>Score</th>
+                            <th>{{ score_detail.score.hole_1 }}</th>
+                            <th>{{ score_detail.score.hole_2 }}</th>
+                            <th>{{ score_detail.score.hole_3 }}</th>
+                            <th>{{ score_detail.score.hole_4 }}</th>
+                            <th>{{ score_detail.score.hole_5 }}</th>
+                            <th>{{ score_detail.score.hole_6 }}</th>
+                            <th>{{ score_detail.score.hole_7 }}</th>
+                            <th>{{ score_detail.score.hole_8 }}</th>
+                            <th>{{ score_detail.score.hole_9 }}</th>
+                            <th>{{ score_detail.score.hole_10 }}</th>
+                            <th>{{ score_detail.score.hole_11 }}</th>
+                            <th>{{ score_detail.score.hole_12 }}</th>
+                            <th>{{ score_detail.score.hole_13 }}</th>
+                            <th>{{ score_detail.score.hole_14 }}</th>
+                            <th>{{ score_detail.score.hole_15 }}</th>
+                            <th>{{ score_detail.score.hole_16 }}</th>
+                            <th>{{ score_detail.score.hole_17 }}</th>
+                            <th>{{ score_detail.score.hole_18 }}</th>
+                            <th>{{ score_detail.score.round_total }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+<div class="row"> <div class="col-md-6">
+                <button type="submit" class="btn-post-but-padding">Save as Image <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
+                    <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
+                    <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
+                  </svg></button>
+                  </div>   
+                  <div class="col-md-6">
+                <form method="post" action="{% url 'delete_score' score_id=score_detail.score.id %}" id="delete-score-form-{{ index }}">
+                    {% csrf_token %}
+                    <button type="button" onclick="confirmDelete({{ index }})" class="btn-delete-but-padding button-container" style="float: right;">Delete Score <svg xmlns="http://www.w3.org/2000/svg" width="1.125rem" height="1.125rem" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                      </svg></button>
+                </form>
+                </div> 
+</div>
+                <script>
+                    function confirmDelete(index) {
+                        if (confirm("Are you sure you want to delete this score?")) {
+                            document.getElementById("delete-score-form-" + index).submit();
+                        }
+                        return false;
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</body>
+
+{% endblock content %}

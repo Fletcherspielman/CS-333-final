@@ -1,0 +1,8 @@
+/media
+*.pyc
+/env
+DigiCaddie/.elasticbeanstalk/*
+!DigiCaddie/.elasticbeanstalk/*.cfg.yml
+!DigiCaddie/.elasticbeanstalk/*.global.yml
+DigiCaddie/.ebextensions/*
+DigiCaddie/.gitignore

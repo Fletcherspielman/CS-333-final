@@ -1,0 +1,261 @@
+{% extends "round/base.html" %}
+
+
+{% block content %}
+{% load bootstrap_icons %}
+{% load static %}
+{% load url_interpreter %}
+
+{% comment %} <link rel="stylesheet" type="text/css" href="/static/round/button_style.css"> {% endcomment %}
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col text-left">
+            <!-- Previous button -->
+            {% include 'round/previous.html' %}
+        </div>
+        <div class="col text-center">
+            <!-- Display golf course name -->
+            <h1 class="card-title">{{ course.course_name }}</h1>
+        </div>
+        <div class="col text-right d-flex justify-content-end">
+            <!-- Next button -->
+            {% include 'round/relocation.html' %}
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Left third of the screen for par numbers -->
+        <div class="col-md-4">
+            <h4 class="card-body text-center pb-2 border-bottom mb-4 text-white">Hole Details</h4>
+            <div class="card mb-3 bg-dark">
+                <div class="card-body">
+                    <h5 class="card-title text-white" id="holeNumber">Hole: <span style="margin-left: 90px;">{{ hole.hole_number }}</h5>
+                </div>
+            </div>
+            <div class="card mb-3 bg-dark">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Par: <span style="margin-left: 100px;">{{ hole.par_number }}</h5>
+                </div>
+            </div>
+            <div class="card mb-3 bg-dark">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Yardage: <span style="margin-left: 50px;">{{ hole.yardage }}</h5>
+                </div>
+            </div>
+            <div class="card mb-3 bg-dark">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Handicap: <span style="margin-left: 45px;">{{ hole.handicap }}</h5>
+                </div>
+            </div>
+            <div class="card mb-3 bg-dark">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Score:</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" name="score" id="id_score" value="{{ scoreForm.score.value }}" class="form-control" style="width: 100px; margin-left: 10px;">
+                            <button type="submit" class="btn-post" style="margin-left: 20px;">Save <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
+                                <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
+                                <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
+                              </svg> </button>
+                            <button type="button" class="btn-post" style="margin-left: 20px; margin-right: 0px;" data-bs-toggle="modal" data-bs-target="#scorecardModal">View Scorecard</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- modal for scorecard-->
+            <div class="modal fade" id="scorecardModal" tabindex="-1" aria-labelledby="scorecardModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Scorecard</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% include 'round/scorecard.html' %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-delete-but-padding" data-bs-dismiss="modal">Close <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                              </svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle third of the screen for user tips with scrolling -->
+        <div class="col-md-4 overflow-auto">
+            <h4 class=" card-body text-center pb-2 border-bottom mb-4 text-white">User Tips</h4>
+            <div class="d-flex justify-content-center"></div>
+
+            {% for tip in tips %}
+            <div class="card-body mb-3 text-light" style="max-width: 28rem;">
+                <div class="card-header">{{ tip.player }}</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ tip.header }}</h5>
+                    <p class="card-text">{{ tip.body }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            <button type="button" class="btn-post" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                data-bs-whatever="@mdo">Create New Tip <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-marker-tip" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5 6.064-1.281-4.696A.5.5 0 0 0 9.736 9H6.264a.5.5 0 0 0-.483.368l-1.28 4.696A6.97 6.97 0 0 0 8 15c1.275 0 2.47-.34 3.5-.936m.873-.598a7 7 0 1 0-8.746 0l1.19-4.36a1.5 1.5 0 0 1 1.31-1.1l1.155-3.851c.213-.713 1.223-.713 1.436 0l1.156 3.851a1.5 1.5 0 0 1 1.31 1.1z"/>
+                  </svg></button>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">New tip</h1>
+                            <button type="button" class="btn-close-light" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                            <p>Use the map to place a marker on the map for other users to see</p>
+                            <div id="map_markers"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn-post">Save Tip <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
+                                <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
+                                <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
+                              </svg> </button>
+                            <button type="button" class="btn-delete-but-padding" data-bs-dismiss="modal">Close <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                              </svg></button>
+                            <!-- <button type="button" class="btn btn-primary">Save Tip</button> -->
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right third of the screen for map -->
+        <div class="col-md-4 text-white">
+            <h4 class=" card-body text-center pb-2 border-bottom mb-4">Map</h4>
+            <div id="map"></div>
+            <!-- Code from mapbox offical examples https://docs.mapbox.com/mapbox-gl-js/example/ -->
+            <style>
+                .mapboxgl-popup {
+                    max-width: 400px;
+                    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+                    color: black;
+                    background: #000;
+                }
+
+                #map {
+                    width: 100%;
+                    height: 100%;
+                    min-height: 500px;
+                }
+                #map_markers {
+                    width: 100%;
+                    height: 100%;
+                    min-height: 300px;
+                }
+            </style>
+            <script>
+                mapboxgl.accessToken = "{{ map_key }}";
+                const bounds = [
+                    [-119.82255583392794, 39.4722944659546], // Southwest coordinates
+                    [-119.80824827923898, 39.483740501840806] // Northeast coordinates
+                ];
+                const map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/fletcher-spielman/clq057zqm00k501px2np8axfv',
+
+                    center: [-119.81706747299891, 39.497498571357355],
+                    zoom: 13,
+                    maxBounds: bounds
+                });
+
+                map.on('load', () => {
+                    map.addSource('places', {
+                        'type': 'geojson',
+                        'data': {
+                            'type': 'FeatureCollection',
+                            'features':
+                                {{ markers | safe}}
+                        }
+                    });
+                    map.addLayer({
+                        'id': 'places',
+                        'type': 'symbol',
+                        'source': 'places',
+                        'layout': {
+                            'icon-image': ['get', 'icon'],
+                            'icon-allow-overlap': true
+                        }
+                    });
+
+                    map.on('click', 'places', (e) => {
+                        // Copy coordinates array.
+                        const coordinates = e.features[0].geometry.coordinates.slice();
+                        const description = e.features[0].properties.description;
+
+                        // Ensure that if the map is zoomed out such that multiple
+                        // copies of the feature are visible, the popup appears
+                        // over the copy being pointed to.
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+
+                        new mapboxgl.Popup()
+                            .setLngLat(coordinates)
+                            .setHTML(description)
+                            .addTo(map);
+                    });
+
+                    // Change the cursor to a pointer when the mouse is over the places layer.
+                    map.on('mouseenter', 'places', () => {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+
+                    // Change it back to a pointer when it leaves.
+                    map.on('mouseleave', 'places', () => {
+                        map.getCanvas().style.cursor = '';
+                    });
+                });
+            </script>
+
+            <script>
+                mapboxgl.accessToken = "{{ map_key }}";
+                const bounds_markers = [
+                    [-119.82255583392794, 39.4722944659546], // Southwest coordinates
+                    [-119.80824827923898, 39.483740501840806] // Northeast coordinates
+                ];
+                const map_markers = new mapboxgl.Map({
+                    container: 'map_markers',
+                    style: 'mapbox://styles/fletcher-spielman/clq057zqm00k501px2np8axfv',
+                    center: [-119.81706747299891, 39.497498571357355],
+                    zoom: 13,
+                    maxBounds: bounds_markers
+                });
+
+                exampleModal.addEventListener('shown.bs.modal', function () {
+                    map_markers.resize();
+                  })
+                var marker = new mapboxgl.Marker();
+                function add_marker (event) {
+                  var coordinates = event.lngLat;
+                  marker.setLngLat(coordinates).addTo(map_markers);
+                  document.getElementById('coords_lng').value = coordinates.lng;
+                  document.getElementById('coords_lat').value = coordinates.lat;
+                }
+                
+                map_markers.on('click', add_marker);
+
+            </script>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

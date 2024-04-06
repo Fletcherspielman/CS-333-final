@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <link rel="icon" href="{% static 'golf.png' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% load bootstrap_icons %}
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(17, 17, 17);
+        }
+    </style>
+</head>
+
+<body>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning align-items-center" role="alert">
+        <div>
+            {% bs_icon 'exclamation-triangle-fill' %}
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="d-flex flex-column justify-content-center align-items-center min-vh-100 ">
+        <div class="row">
+            {% comment %} The gold icon belongs to: <a href="https://www.flaticon.com/free-icons/golf" title="golf icons">Golf icons created by Freepik - Flaticon</a> {% endcomment %}
+            <p class="hello justify-center text-center"> DigiCaddie 
+            <img style=" width: 3rem; height: 3rem; padding:0.5rem 0.5rem;" src= "/static/golf.png"></p>
+            <form action="/" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="row">
+                    <div class="col">
+                        <button class="btn-load" type="submit"> Log in </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn-load float-end" name="sign_up" value="sign_up">Sign Up</button>
+                    </div>
+                </div>
+            </form>
+            <a href="{% url 'login:password_reset' %}">Forgot Password?</a>
+        </div>
+    </div>
+</body>
+
+</html>

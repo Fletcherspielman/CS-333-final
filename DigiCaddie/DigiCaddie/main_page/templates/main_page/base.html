@@ -1,0 +1,606 @@
+{% load static %}
+{% load bootstrap_icons %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <link rel="stylesheet" href="{% static 'base.css' %}">
+  <link rel="icon" href="{% static 'golf.png' %}">
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.js"></script>
+  <meta name=" viewport" content="width=device-width, initial-scale=1">
+  <title>Digiecaddie</title>
+</head>
+
+<body>
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-warning align-items-center" role="alert">
+      <div>
+          {% bs_icon 'exclamation-triangle-fill' %}
+          {{ message }}
+      </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+  <nav class="navbar-expand navbar-nav">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse">
+      <a class="navbar-brand">DigiCaddie</a>
+      <ul class="navbar-nav ms-auto">
+        <button class ="btn-load align-right d-flex justify-content-end" id="toggleHighContrastButton" alt="Toggle Theme">
+          <svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high-fill" viewBox="0 0 16 16" style="float: right;">
+          <path d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+        </svg>
+          <svg id="darkIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16" style="float: right; display:none;">
+          <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
+        </svg>
+      </button>
+    </ul>
+      {% comment %} <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+           <a class="btn-accessible" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+           <img class="rounded-circle" style="width: 2.188rem; height: 2.188rem;" src= "/static/accWhite.svg">
+          </a> 
+          <ul class="dropdown-menu btn-post" aria-labelledby="profileDropdown">
+            <li><button type="button" class="dropdown-item btn-post" id="toggleHighContrastButton">High Contrast Mode</button></li>
+            <li><a class="dropdown-item btn-post" href="#">Zoom</a></li>
+          </ul> {% endcomment %}
+        </div>
+    </div>
+  </nav>
+  <nav class="navbar navbar-expand  navbar-dark ">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="/mainpage">Home</a></li>
+          {% comment %} <li class="nav-item"><a class="nav-link" href="/maps">Maps</a></li> {% endcomment %}
+          <li class="nav-item"><a class="nav-link" href="/round/scorecard">Scorecard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/round/selection">Start Round</a></li>
+          {% if request.user.is_staff %} 
+          <li class="nav-item"><a class="nav-link" href="{% url 'admin:index'%}">Admin Panel</a></li>
+          {% endif %}
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle " href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Profile
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end btn-post" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item btn-post" href="{% url 'main_page:profile_page' request.user.username %}">View Profile</a></li>
+              <li><a class="dropdown-item btn-post" href="/logout_user">Log Out</a></li>
+            </ul>
+          </li>
+      </div>
+    </div>
+  </div>
+  </nav>
+  <div id="liveAlertPlaceholder"></div>
+  {% block content %}
+
+  {% endblock content %}
+</body>
+  <script>
+    {% comment %} inspired by https://medium.com/@nishalk25121999/how-to-make-a-like-button-using-django-ajax-d2db38e6d2f8 {% endcomment %}
+    $(document).on('click', '.like_post', function() {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:like_post' %}",
+        data: {
+          'content_id': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          selector = document.getElementsByName(response.content_id);
+          image = document.getElementsByName(response.content_id + "-image-post");
+          path = document.getElementsByName(response.content_id + "-path-post");
+          if (response.liked == true) {
+            $(image).css("fill", "red");
+            $(path).attr("d", "M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314");
+          }
+          else if (response.liked == false) {
+            $(image).css("fill", "white");
+            $(path).attr("d", "m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15");
+
+          }
+        },
+        error: function () {
+          console.log("Error in call to like post");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on('click', '.comment', function() {
+      let name = $(this).attr('name');
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:comment_post_pros' %}",
+        data: {
+          'content_id': name,
+          'text': document.getElementById(name + '_comment_post').value,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          var selector = document.getElementById("comment_section_" + name);
+          var text_comment = document.getElementById(name + '_comment_post').value;
+          var author_comment = response.author;
+          var comment_id = response.comment_id;
+          let html =
+            ` 
+              <div class="row justify-content-start justify-content-between">
+                <div class="col-auto me-auto">
+                  <img class='rounded-circle' style="width: 40px; height: 40px;" src='{{request.user.profile_pic.user_profile_picture.url}}'>
+                </div>
+                <div class='col comment-card'>
+                  <div class='linky-text d-flex align-items-center text-start justify-content-between'> 
+                    <td>` + author_comment + `</td>
+                    <div class='dropdown' data-bs-toggle='dropdown'> 
+                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'><path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3'/>
+                    </svg>
+                  </div>
+                  <ul class='dropdown-menu dropdown-menu-dark'>
+                    <li><a class='dropdown-item' href='#'>Report</a></li>
+                    <li><a class='dropdown-item' href='#'>Block Account</a></li>
+                  </ul>
+                </div>
+                <div class='card-body'>
+                  <td>` + text_comment + `</td>
+                </div>
+                <div class='card-footer'>
+                  <button class='like_comment' style='padding: 0; border: none; background: none;' name='` + comment_id + `'>
+                  <svg name='` + comment_id + `-comment' style=' fill: currentColor;'xmlns='http://www.w3.org/2000/svg' width='16' height='16'fill='currentColor' class='bi bi-heart' viewBox='0 0 16 16'>
+                    <path name='` + comment_id + `-path' d='m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15' />
+                  </svg> 
+                  </object>
+                  </button>
+                </div>
+              </div>
+          `;
+          selector.insertAdjacentHTML("afterbegin", html);
+          $('#comments-'+name+'-reply').collapse('hide');
+        },
+        error: function () {
+          console.log("Error in call to comment on post");
+          alert('Error, An error has occured please try again later', 'danger');
+        }
+      });
+    });
+    
+    $(document).on('click', '.comment_reply', function() {
+      let name = $(this).attr('name');
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:comment_reply_pros' %}",
+        data: {
+          'content_id': name,
+          'text': document.getElementById(name + '_comment_reply').value,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          var selector = document.getElementById("comment_section_"+name);
+          var text_comment = document.getElementById(name + '_comment_reply').value;
+          var author_comment = response.author;
+          var comment_id = response.comment_id;
+          let html =
+            ` 
+              <div class="row justify-content-start justify-content-between">
+                <div class="col-auto me-auto">
+                  <img class='rounded-circle' style="width: 40px; height: 40px;" src='{{request.user.profile_pic.user_profile_picture.url}}'>
+                </div>
+                <div class='col comment-card'>
+                  <div class='linky-text d-flex align-items-center text-start justify-content-between'> 
+                    <td>` + author_comment + `</td>
+                    <div class='dropdown' data-bs-toggle='dropdown'> 
+                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'><path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3'/>
+                    </svg>
+                  </div>
+                  <ul class='dropdown-menu dropdown-menu-dark'>
+                    <li><a class='dropdown-item' href='#'>Report</a></li>
+                    <li><a class='dropdown-item' href='#'>Block Account</a></li>
+                  </ul>
+                </div>
+                <div class='card-body'>
+                  <td>` + text_comment + `</td>
+                </div>
+                <div class='card-footer'>
+                  <button class='like_comment' style='padding: 0; border: none; background: none;' name='` + comment_id + `'>
+                  <svg name='` + comment_id + `-comment' style=' fill: currentColor;'xmlns='http://www.w3.org/2000/svg' width='16' height='16'fill='currentColor' class='bi bi-heart' viewBox='0 0 16 16'>
+                    <path name='` + comment_id + `-path' d='m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15' />
+                  </svg> 
+                  </object>
+                  </button>
+                </div>
+              </div>
+          `;
+          selector.insertAdjacentHTML("afterbegin", html);
+          $('#comments-'+name+'-comment').collapse('hide');
+        },
+        error: function () {
+          console.log("Error in call to comment reply on post");
+          alert('Error, An error has occured please try again later', 'danger');
+        }
+      });
+    });
+
+    $(document).on("click", ".load_comments_temp", function () {
+      let id = $(this).attr('name')
+      $.ajax({
+        type: "GET",
+        url: "{% url 'main_page:load_comments' %}",
+        data: {
+          'id_post': id,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          $('#comment_section_'+ id).html(response.html);
+        },
+        error: function () {
+          console.log("Error in call to request comments");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".load_all_comments_temp", function () {
+      let id = $(this).attr('name')
+      $.ajax({
+        type: "GET",
+        url: "{% url 'main_page:load_all_comments' %}",
+        data: {
+          'id_post': id,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          $('#comment_section_all_'+ id).html(response.html);
+        },
+        error: function () {
+          console.log("Error in call to request all comments");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".like_comment", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:like_comment' %}",
+        data: {
+          'content_id': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          selector = document.getElementsByName(response.content_id)+ "-comment-button";
+          image = document.getElementsByName(response.content_id + "-comment");
+          path = document.getElementsByName(response.content_id + "-path-comment");
+          if (response.liked == true) {
+            $(image).css("fill", "red");
+            $(path).attr("d", "M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314");
+          }
+          else if (response.liked == false) {
+            $(image).css("fill", "white");
+            $(path).attr("d", "m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15");
+
+          }
+        },
+        error: function () {
+          console.log("Error in call to like comment");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+    $(document).on("click", ".add_friend", function () {
+      $(this).prop("disabled", true);
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:send_friend_request' %}",
+        data: {
+          'user_id_sent': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          image = document.getElementsByName(response.user_request_id + "-color");
+          $(image).css("color", "red");
+          $(this).prop('disabled', true);
+        },
+        error: function () {
+          console.log("Error in call to add friend");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".accept_friend", function () {
+      $(this).prop("disabled", true);
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:accept_friend_request' %}",
+        data: {
+          'id_accepted': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          image = document.getElementsByName(response.user_request_id + "-color");
+          $(image).css("color", "red");
+        },
+        error: function () {
+          console.log("Error in call to accept friend request");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".report_comment", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:report_comment' %}",
+        data: {
+          'id_comment': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          alert('Report Submitted', 'primary')
+        },
+        error: function () {
+          console.log("Error in call to report comment");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".report_post", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:report_post_ajax' %}",
+        data: {
+          'id_post': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          alert('Report Submitted', 'primary')
+        },
+        error: function () {
+          console.log("Error in call to report post");
+          alert('Error, you cannot report the same post or comment more than once', 'danger')
+        }
+      });
+    });
+
+
+    $(document).on("click", ".delete-post", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:delete_post' %}",
+        data: {
+          'id_post': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          alert('Post deleted', 'primary')
+        },
+        error: function () {
+          console.log("Error in call to delete post");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".delete-comment", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:delete_comments' %}",
+        data: {
+          'id_comment': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          alert('Post deleted', 'primary')
+        },
+        error: function () {
+          console.log("Error in call to delete comment");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+    $(document).on("click", ".unfriend", function () {
+      $(this).prop("disabled", true);
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:remove_friend' %}",
+        data: {
+          'friend': $(this).attr('name'),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          
+        },
+        error: function () {
+          console.log("Error in call to delete comment");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    });
+
+    $(document).on("click", ".search-friends-test", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'main_page:search_friends' %}",
+        data: {
+          'person': $(user_search).val(),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.empty == 1) {
+            let html = "<p> No users found with that name </p>";
+            $('.friend-list').empty();
+            $('.friend-list').append(html);
+          } else {
+            $('.friend-list').empty();
+            for (let i = 0; i < response.list_users.length; i++) {
+              let html = `
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-2"> <img class="rounded-circle"
+                  style="width: 40px; height: 40px"
+                  src="`+ response.list_users[i][2] +`">
+                </div>
+                <div class="col"> <a style="text-decoration: none; color:white;" href="/main_page/profile_page/` + response.list_users[i][1] +`">`+ response.list_users[i][1] +` </a></div>
+                <div class="col col-auto">`;
+              if (response.list_users[i][3] == 1) {
+                html = html + `<button name="`+response.list_users[i][1]+`" id=type="button"
+                class="add_friend button rounded-circle">
+                <span name="`+ response.list_users[i][1] +`-color">&#10003;</span>
+                    </button>
+                </div>
+                  </div>
+                </div>`;
+              } else {
+                html = html + `
+                <button name="`+response.list_users[i][1]+`" id=type="button"
+                  class="add_friend button rounded-circle" disabled>
+                  <span name="`+ response.list_users[i][1] +`-color" style="color: red;">&#10003;</span>
+                    </button>
+                </div>
+                  </div>
+                </div>`;
+              }
+              $('.friend-list').append(html);
+            }
+          }
+        },
+        error: function () {
+          $('.friend-list').empty();
+          let html = "<p> No users found with that name </p>";
+          $('.friend-list').append(html);
+        }
+      });
+    });
+    {% comment %} $(document).on("click", ".open_post", function () {
+      var id_post = $(this).attr('name');
+      console.log(id_post);
+      $.ajax({
+        type: "GET",
+        url: ,
+        data: {
+          'post_id': id_post,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          var myModal = new bootstrap.Modal(document.getElementById('Post'), {
+            keyboard: false
+          })
+          myModal.show()
+        },
+        error: function () {
+          console.log("Error in open post");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    }); {% endcomment %}
+    $(document).on("click", ".show_comments", function () {
+
+    });
+    var alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+
+    function alert(message, type) {
+      var wrapper = document.createElement('div')
+      wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+
+      alertPlaceholder.append(wrapper)
+      const alert = bootstrap.Alert.getOrCreateInstance('#liveAlertPlaceholder')
+      setTimeout(() => { alert.close(); }, 2000);
+    }
+    document.getElementById('toggleHighContrastButton').addEventListener('click', function() {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '{% static 'high-contrast.css' %}';
+      
+      var lightIcon = document.getElementById('lightIcon');
+      var darkIcon = document.getElementById('darkIcon');
+      
+      var existingLink = document.querySelector('link[href="{% static 'high-contrast.css' %}"]');
+      if (existingLink) {
+       
+        existingLink.parentNode.removeChild(existingLink);
+        lightIcon.style.display = 'block';
+        darkIcon.style.display = 'none';
+      } else {
+       
+        document.head.appendChild(link);
+        lightIcon.style.display = 'none';
+        darkIcon.style.display = 'block';
+      }
+    });
+
+
+    $(document).ready(function(){
+      $.ajax({
+        type: "GET",
+        url: "{% url 'main_page:load_post' %}",
+        data: {
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          $('#load_post').html(response.html);
+        },
+        error: function () {
+          console.log("Error in call to load post");
+          alert('Error, An error has occured please try again later', 'danger')
+        }
+      });
+    }
+    )
+
+    let scroll_count = 5;
+    $(window).scroll(function() {
+      {% comment %} https://stackoverflow.com/a/3898152 {% endcomment %}
+      if($(window).scrollTop() + $(window).height() == $(document).height()) {
+        $.ajax({
+          type: "GET",
+          url: "{% url 'main_page:load_more_post' %}",
+          data: {
+            'count': scroll_count,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          dataType: "json",
+          success: function (response) {
+            if (response.empty) {
+              $('#load_more_post').after("<center><h1 class='text-white'> No more post to load </h1><center>");
+            } else {
+              $('#load_more_post').before(response.html);
+              scroll_count = scroll_count + 5;
+            }
+          },
+          error: function () {
+            console.log("Error in call to load more post");
+            alert('Error, An error has occured please try again later', 'danger')
+          }
+        });
+      }
+    });
+
+  </script>
+</body>
+
+</html>

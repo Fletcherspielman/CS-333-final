@@ -1,0 +1,102 @@
+{% extends "main_page/base.html" %}
+
+{% block content %}
+{% load bootstrap_icons %}
+{% load static %}
+
+<div class="container-fluid">
+    <div class="row g-4">
+        <div class="col-lg-3">
+
+        </div>
+        {% comment %} insperation https://themes.getbootstrap.com/product/social-network-community-and-event-theme/ no
+        where close to being done with all this {% endcomment %}
+        <div class="col-md-8 col-lg-6 vstack gap-4">
+            <br>
+            <main>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="card-bodyish">
+                            <td><title>Tell us about your day!</title>Tell us about your day!</td>
+                            {% csrf_token %}
+                            {{ form_post_image.as_p }}
+                            <button type="submit" class=" btn-load" name="upload_image" value="upload_image">
+                                Post! </button>
+                        </div>
+                    </form>
+                </div>
+                <br>
+                <div id="load_post">
+                </div>
+                <div id="load_more_post">
+                </div>
+            </main>
+        </div>
+        <div class="col-lg-3">
+            <br>
+            <br>
+            <div class="card-body">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <td>Accounts to follow<title>Accounts to follow</title></td>
+                        </div>
+                        <div class="col col-auto">
+                            <button data-bs-toggle="modal" data-bs-target="#search-friends"
+                                style="padding: 0; border: none; background: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+                                    class="bi bi-search" viewBox="0 0 16 16" <title> Search </title>
+                                    <path
+                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                
+                                    </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% for y in possible_friends %}
+                    <div class="row d-flex flex-wrap align-items-left">
+                        <div class="col d-flex justify-content-between align-items-center">
+                          <div class="mr-auto"> <img class="rounded-circle" src="{{ y.profile_pic.user_profile_picture.url }}" style="width: 2.5rem; height: 2.5rem; border: 0.5rem;">
+                            <a href="{% url 'main_page:profile_page' y.username %}" style="linky-text text-decoration:none; color: currentColor; padding: 0.5rem;"> {{ y.username }} </a>
+                          </div>
+                          <button name="{{ y.username }}" type="button" class="add_friend button rounded-circle"><span name="{{ y.username }}-color">&#10003;</span></button>
+                        </div>
+                      </div>                      
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="search-friends" tabindex="-1" aria-labelledby="search-friends-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="search-friends-label">Search for user</h5>
+                <button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-start">
+                <div class="form-group bg-dark row">
+                    <div class="col-auto">
+                        <label for="user_search">
+                            <input  class="form-control search-friends-information" id="user_search" placeholder="Search for a User"></input>
+                        </label>
+                    </div>
+                    <div class="col-auto">
+                        <button class="search-friends-test" type="" class="btn-load btn-outline-light">Search</button>
+                    </div>
+                </div>
+                <div class="w-100 friend-list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

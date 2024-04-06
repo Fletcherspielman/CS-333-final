@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <link rel="stylesheet" href="{% static 'base.css' %}">
+        <link rel="icon" href="{% static 'golf.png' %}">
+        {% comment %} <link rel="stylesheet" type="text/css" href= "{% static 'round/style.css' %}"> 
+        <link rel="stylesheet" type="text/css" href= "{% static 'round/button_style.css' %}"> {% endcomment %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+        <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+        <title>Digiecaddie</title>
+    </head>
+    <body>
+      <nav class="navbar-expand navbar-nav">
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse">
+          <a class="navbar-brand">DigiCaddie</a>
+          {% comment %} <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+              <a class="btn-accessible" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+               <img class="rounded-circle" style="width: 2.188rem; height: 2.188rem;" src= "/static/accWhite.svg">
+              </a> 
+              <ul class="dropdown-menu dropdown-menu-end btn-post" aria-labelledby="profileDropdown">
+                <li><button type="button" class="dropdown-item btn-post" id="toggleHighContrastButton">High Contrast Mode</button></li>
+                <li><a class="dropdown-item btn-post" href="/logout_user">Log Out</a></li>
+              </ul> {% endcomment %}
+            </div>
+        </div>
+      </nav>
+      <nav class="navbar navbar-expand  navbar-dark ">
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item"><a class="nav-link" href="/mainpage">Home</a></li>
+              {% comment %} <li class="nav-item"><a class="nav-link" href="/maps">Maps</a></li> {% endcomment %}
+              <li class="nav-item"><a class="nav-link" href="/round/scorecard">Scorecard</a></li>
+              <li class="nav-item"><a class="nav-link" href="/round/selection">Start Round</a></li>
+              {% if request.user.is_staff %} 
+              <li class="nav-item"><a class="nav-link" href="/admin">Admin Panel</a></li>
+              {% endif %}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle " href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Profile
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end btn-post" aria-labelledby="profileDropdown">
+                  <li><a class="dropdown-item btn-post" href="{% url 'main_page:profile_page' request.user.username %}">View Profile</a></li>
+                  <li><a class="dropdown-item btn-post" href="/logout_user">Log Out</a></li>
+                </ul>
+              </li>
+          </div>
+        </div>
+      </nav>
+      <div id="liveAlertPlaceholder"></div>
+      {% block content %}
+    
+      {% endblock content %}
+      <body>
+        <script src="{% static 'round/highContrast.js' %}">
+          function alert(message, type) {
+            var wrapper = document.createElement('div')
+            wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+      
+            alertPlaceholder.append(wrapper)
+            const alert = bootstrap.Alert.getOrCreateInstance('#liveAlertPlaceholder')
+            setTimeout(() => { alert.close(); }, 2000);
+          }
+          document.getElementById('toggleHighContrastButton').addEventListener('click', function() {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '{% static 'high-contrast.css' %}';
+            
+            // Check if high contrast mode is already enabled
+            var existingLink = document.querySelector('link[href="{% static 'high-contrast.css' %}"]');
+            if (existingLink) {
+              // If high contrast mode is enabled, remove the link to disable it
+              existingLink.parentNode.removeChild(existingLink);
+              document.getElementById('toggleHighContrastButton').textContent = 'High Contrast Mode';
+            } else {
+              // If high contrast mode is not enabled, add the link to enable it
+              document.head.appendChild(link);
+              document.getElementById('toggleHighContrastButton').textContent = 'Default Mode';
+            }
+          });
+        </script>
+</html>
