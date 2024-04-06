@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'DigiCaddie.urls'
@@ -90,29 +91,10 @@ WSGI_APPLICATION = 'DigiCaddie.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 # aws setting for database
-if 'EXTERNAL_DB' in os.environ:
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PGDATABASE'),
-        'USER': os.getenv('PGUSER'),
-        'PASSWORD': os.getenv('PGPASSWORD'),
-        'HOST': os.getenv('PGHOST'),
-        'PORT': 5432,
-        'OPTIONS': {
-        'sslmode': 'require',
-        },
-    }
-    }
-else:
-    DATABASES = {
-            'default': {
+DATABASES = {
+        'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': '123456',
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'NAME': 'ciba',
         }
     }
 
@@ -154,11 +136,11 @@ USE_TZ = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 MEDIA_URL = '/mediafiles/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    'static',
-]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 django_heroku.settings(locals()) 
 
 # Default primary key field type
