@@ -133,15 +133,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 MEDIA_URL = 'mediafiles/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = 'static/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-django_heroku.settings(locals()) 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -166,3 +165,6 @@ else:
 SUPER_USER_PASSWORD = os.getenv("SUPER_USER_PASS")
 AWS_CLIENT_KEY_ID = os.getenv("SECRET_CLIENT_KEY_REKOG") 
 AWS_SECRET_ACCESS_KEY= os.getenv("SECRET_CLIENT_ACCESS_KEY_REKOG") 
+
+
+django_heroku.settings(locals()) 
