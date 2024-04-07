@@ -167,13 +167,14 @@ if USE_S3:
     STATIC_URL = f'https://cs333final.s3.amazonaws.com/static/'
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles/')
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')  
+    MEDIA_ROOT = os.path.join(BASE_DIR, "live-static-files", "media-root")
+    STATIC_ROOT = os.path.join(BASE_DIR, "live-static-files", "static-root") 
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage' 
     MEDIA_URL = '/mediafiles/'
     STATIC_URL = '/static/'
-    STATICFILES_DIRS = [
-        'static/'
-    ]
+    STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    )
 
 
 # Default primary key field type
