@@ -155,24 +155,22 @@ if USE_S3:
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = 'cs333final'
     AWS_DEFAULT_ACL = None
-    AWS_S3_CUSTOM_DOMAIN = f'cs333final.s3.amazonaws.com/'
+    AWS_S3_CUSTOM_DOMAIN = f'cs333final.s3.amazonaws.com'
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     PUBLIC_MEDIA_LOCATION = 'media'
-    MEDIA_URL = 'https://cs333final.s3.amazonaws.com/media/'
+    MEDIA_URL = f'https://cs333final.s3.amazonaws.com/media/'
     DEFAULT_FILE_STORAGE = 'DigiCaddie.storage_backends.PublicMediaStorage'
     AWS_LOCATION = 'static'
-    STATIC_URL = 'https://cs333final.s3.amazonaws.com/static/'
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.StaticStorage'
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://cs333final.s3.amazonaws.com/static/'
+    STATICFILES_STORAGE = 'DigiCaddie.storage_backends.StaticStorage'
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
     MEDIA_URL = '/mediafiles/'
     STATIC_URL = '/static/'
-    STATICFILES_DIRS = [
-        'static'
-    ]
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')  
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
