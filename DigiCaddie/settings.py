@@ -31,7 +31,7 @@ else:
     # ^nwz!y=%4&@n_u)kkgfh$ylavyk2lnag=&idw^4-y^slzxls3(
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['digicaddie.net', '127.0.0.1', '.elasticbeanstalk.com', '172.31.13.114', '.herokuapp.com/']
+ALLOWED_HOSTS = ['digicaddie.net', '127.0.0.1', '.elasticbeanstalk.com', '172.31.13.114', '.herokuapp.com']
 
 
 # Application definition
