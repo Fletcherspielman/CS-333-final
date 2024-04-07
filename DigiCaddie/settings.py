@@ -199,6 +199,3 @@ else:
 SUPER_USER_PASSWORD = os.getenv("SUPER_USER_PASS")
 AWS_CLIENT_KEY_ID = os.getenv("SECRET_CLIENT_KEY_REKOG") 
 AWS_SECRET_ACCESS_KEY= os.getenv("SECRET_CLIENT_ACCESS_KEY_REKOG") 
-
-
-django_heroku.settings(locals()) 
