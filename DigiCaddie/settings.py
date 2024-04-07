@@ -25,16 +25,13 @@ USE_S3 = os.getenv('USE_S3') == 'TRUE'
 if USE_S3:
     SECRET_KEY = os.getenv("SECRET_KEY")
     DEBUG = False
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 15768000
 else:
     SECRET_KEY = 'django-insecure-a6@2i3$6sh^63d9m664mma@112)xs@7o7b79p*75$p-6-vpy5o'
     DEBUG = True
     # ^nwz!y=%4&@n_u)kkgfh$ylavyk2lnag=&idw^4-y^slzxls3(
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['digicaddie.net', '127.0.0.1', '.elasticbeanstalk.com', '172.31.13.114']
+ALLOWED_HOSTS = ['digicaddie.net', '127.0.0.1', '.elasticbeanstalk.com', '172.31.13.114', '.herokuapp.com/']
 
 
 # Application definition
