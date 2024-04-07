@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-import django_heroku 
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -31,11 +31,11 @@ if USE_S3:
     SECURE_HSTS_SECONDS = 15768000
 else:
     SECRET_KEY = 'django-insecure-a6@2i3$6sh^63d9m664mma@112)xs@7o7b79p*75$p-6-vpy5o'
-    DEBUG = False
+    DEBUG = True
     # ^nwz!y=%4&@n_u)kkgfh$ylavyk2lnag=&idw^4-y^slzxls3(
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['digicaddie.net', '127.0.0.1', '.herokuapp.com']
+ALLOWED_HOSTS = ['digicaddie.net', '127.0.0.1', '.elasticbeanstalk.com', '172.31.13.114']
 
 
 # Application definition
@@ -64,7 +64,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'DigiCaddie.urls'
@@ -91,10 +90,29 @@ WSGI_APPLICATION = 'DigiCaddie.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 # aws setting for database
-DATABASES = {
-        'default': {
+if 'EXTERNAL_DB' in os.environ:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': 5432,
+        'OPTIONS': {
+        'sslmode': 'require',
+        },
+    }
+    }
+else:
+    DATABASES = {
+            'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'ciba',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': '123456',
+            'HOST': 'localhost',
+            'PORT': '5432',
         }
     }
 
@@ -133,13 +151,31 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
-MEDIA_URL = 'mediafiles/'
+# https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/
+if USE_S3:
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = 'digicaddie-media'
+    AWS_DEFAULT_ACL = None
+    AWS_S3_CUSTOM_DOMAIN = f'digicaddie-media.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://digicaddie-media.s3.amazonaws.com/media/'
+    DEFAULT_FILE_STORAGE = 'DigiCaddie.storage_backends.PublicMediaStorage'
+    # s3 static settings
+    AWS_LOCATION = 'static'
+    STATIC_URL = f'https://cs333final.s3.amazonaws.com/static/'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+    MEDIA_URL = '/mediafiles/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    'static',
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
