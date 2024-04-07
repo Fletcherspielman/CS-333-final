@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'DigiCaddie.urls'
@@ -156,26 +156,25 @@ USE_TZ = True
 if USE_S3:
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = 'digicaddie-media'
+    AWS_STORAGE_BUCKET_NAME = 'cs333final'
     AWS_DEFAULT_ACL = None
-    AWS_S3_CUSTOM_DOMAIN = f'digicaddie-media.s3.amazonaws.com'
+    AWS_S3_CUSTOM_DOMAIN = f'cs333final.s3.us-east-1.amazonaws.com/'
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     PUBLIC_MEDIA_LOCATION = 'media'
-    MEDIA_URL = f'https://digicaddie-media.s3.amazonaws.com/media/'
+    MEDIA_URL = 'https://cs333final.s3.us-east-1.amazonaws.com/media/'
     DEFAULT_FILE_STORAGE = 'DigiCaddie.storage_backends.PublicMediaStorage'
-    # s3 static settings
     AWS_LOCATION = 'static'
-    STATIC_URL = f'https://cs333final.s3.amazonaws.com/static/'
+    STATIC_URL = 'https://cs333final.s3.us-east-1.amazonaws.com/static/'
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, "live-static-files", "media-root")
-    STATIC_ROOT = os.path.join(BASE_DIR, "live-static-files", "static-root") 
-    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage' 
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
     MEDIA_URL = '/mediafiles/'
     STATIC_URL = '/static/'
-    STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    )
+    STATICFILES_DIRS = [
+        'static',
+    ]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')  
+
 
 
 # Default primary key field type
@@ -200,4 +199,4 @@ else:
 
 SUPER_USER_PASSWORD = os.getenv("SUPER_USER_PASS")
 AWS_CLIENT_KEY_ID = os.getenv("SECRET_CLIENT_KEY_REKOG") 
-AWS_SECRET_ACCESS_KEY= os.getenv("SECRET_CLIENT_ACCESS_KEY_REKOG") 
+SECRET_CLIENT_KEY_REKOG = os.getenv("SECRET_CLIENT_ACCESS_KEY_REKOG") 

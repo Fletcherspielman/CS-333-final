@@ -5,7 +5,7 @@ def content_moderation(photo):
     client=boto3.client(
                         'rekognition',
                         aws_access_key_id= settings.AWS_CLIENT_KEY_ID,
-                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+                        aws_secret_access_key=settings.SECRET_CLIENT_KEY_REKOG
                         )
 
     with open(str(settings.BASE_DIR) + photo, 'rb') as image:
