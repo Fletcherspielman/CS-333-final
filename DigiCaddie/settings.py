@@ -24,7 +24,7 @@ USE_S3 = os.getenv('USE_S3') == 'TRUE'
 # SECURITY WARNING: keep the secret key used in production secret!
 if USE_S3:
     SECRET_KEY = os.getenv("SECRET_KEY")
-    DEBUG = False
+    DEBUG = True
 else:
     SECRET_KEY = 'django-insecure-a6@2i3$6sh^63d9m664mma@112)xs@7o7b79p*75$p-6-vpy5o'
     DEBUG = True
