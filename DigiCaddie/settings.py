@@ -162,13 +162,13 @@ if USE_S3:
     DEFAULT_FILE_STORAGE = 'DigiCaddie.storage_backends.PublicMediaStorage'
     AWS_LOCATION = 'static'
     STATIC_URL = 'https://cs333final.s3.amazonaws.com/static/'
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.StaticStorage'
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
     MEDIA_URL = '/mediafiles/'
     STATIC_URL = '/static/'
     STATICFILES_DIRS = [
-        'static',
+        'static'
     ]
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')  
 
