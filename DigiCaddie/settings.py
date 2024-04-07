@@ -153,8 +153,8 @@ USE_TZ = True
 
 # https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/
 
-AWS_ACCESS_KEY_ID = 'AKIA2UC3FQSLZDRMLL6O'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = 'digicaddie-media'
 AWS_DEFAULT_ACL = None
 AWS_S3_CUSTOM_DOMAIN = f'digicaddie-media.s3.amazonaws.com'
