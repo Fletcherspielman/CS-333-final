@@ -48,9 +48,8 @@ INSTALLED_APPS = [
     'login',
     'main_page',
     'round',
-    'django_bootstrap_icons',
+    'django_bootstrap_icons',  
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

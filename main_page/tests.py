@@ -2,7 +2,7 @@ import json
 from unittest import skip
 from django.test import TestCase, Client
 from main_page.views import report_comment
-from main_page.forms import comment_form_post, image_fourms, user_profile_pic_form, comments_post
+from main_page.forms import comment_form_post, image_fourms, user_profile_pic_form, comments_post, update_profile, update_security
 from main_page.models import ReportComment, userpost, report_post, ReportComment, comments_post, user_friends, friend_request_model
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime
@@ -217,3 +217,58 @@ class comment_form_test(TestCase):
 
             # Consider logging or raising an error for unexpected responses
             print(f"Unexpected response status code: {response.status_code}")
+
+
+class test_devops(TestCase):
+
+    def setUp(self):
+        # set up a users 
+        User.objects.create_user(
+            username='user1', password='test1234'
+        )
+        User.objects.create_user(
+            username='user2', password='test1234'
+        )
+        self.client.login(username='user1', password='test1234')
+
+    def test_settings_page_request(self):
+        code = self.client.get('/main_page/settings')
+        self.assertEqual(code.status_code, 200)
+
+
+    def test_settings_page_namechange(self):
+        post_info = { 
+            'firstname': 'fletcher',
+            'lastname': 'last',
+            'email': 'test@test123.com',
+        }
+        form = update_profile(data=post_info)
+        self.assertTrue(form.is_valid())
+
+    def test_settings_page_passwordchange(self):
+        password_change = { 
+            'current_password': 'test1234',
+            'new_password': 'test12345',
+            'confirm_new_password': 'test12345',
+        }
+        form = update_security(data=password_change)
+        self.assertTrue(form.is_valid())
+
+    def test_settings_page_intergration_test(self): 
+        main_user = auth.get_user(self.client)
+        # test connection
+        code = self.client.get('/main_page/settings')
+        self.assertEqual(code.status_code, 200)
+        # test change of firstname 
+        # /main_page/settings
+        firstname = "dave"
+        profile_name = { 
+            'firstname': firstname,
+        }
+        form = update_profile(profile_name)
+        self.assertTrue(form.is_valid())
+        
+        
+        # look at db for firtname in database 
+
+        # then change password and look for hashchange 
