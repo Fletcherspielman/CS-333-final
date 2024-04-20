@@ -3,13 +3,16 @@ from unittest import skip
 from django.test import TestCase, Client
 from main_page.views import report_comment
 from main_page.forms import comment_form_post, image_fourms, user_profile_pic_form, comments_post, update_profile, update_security
-from main_page.models import ReportComment, userpost, report_post, ReportComment, comments_post, user_friends, friend_request_model
+from main_page.models import ReportComment, userpost, report_post, ReportComment, comments_post, user_friends, friend_request_model, comments_replies
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib import auth
 from django.urls import reverse
 from django.http import HttpRequest
+from main_page import views
+from PIL import Image
+from io import StringIO, BytesIO
 # Create your tests here.
 class comment_form_test(TestCase):
 
@@ -219,7 +222,7 @@ class comment_form_test(TestCase):
             print(f"Unexpected response status code: {response.status_code}")
 
 
-class test_devops(TestCase):
+class test_settings_devops(TestCase):
 
     def setUp(self):
         # set up a users 
@@ -229,7 +232,7 @@ class test_devops(TestCase):
         User.objects.create_user(
             username='user2', password='test1234'
         )
-        self.client.login(username='user1', password='test1234')
+        login = self.client.login(username='user1', password='test1234')
 
     def test_settings_page_request(self):
         code = self.client.get('/main_page/settings')
@@ -255,7 +258,7 @@ class test_devops(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_settings_page_intergration_test(self): 
-        main_user = auth.get_user(self.client)
+        self.client.login(username='user1', password='test1234')
         # test connection
         code = self.client.get('/main_page/settings')
         self.assertEqual(code.status_code, 200)
@@ -264,11 +267,198 @@ class test_devops(TestCase):
         firstname = "dave"
         profile_name = { 
             'firstname': firstname,
+            'update_profile': '',
         }
         form = update_profile(profile_name)
         self.assertTrue(form.is_valid())
-        
-        
+        self.client.post("/main_page/settings", profile_name)
         # look at db for firtname in database 
-
+        test_user = User.objects.get(username = 'user1')
+        self.assertEqual(test_user.first_name, "dave")
         # then change password and look for hashchange 
+        old_password = test_user.password
+        update_security = { 
+            'current_password': 'test1234',
+            'new_password': '123456',
+            'confirm_new_password': '123456',
+            'update_security': '',
+        }
+        self.client.post("/main_page/settings", update_security)
+        test_user = User.objects.get(username = 'user1')
+        self.assertNotEqual(test_user.password, old_password)
+
+
+class test_ajax_devops(TestCase):
+    def setUp(self):
+        # set up a users 
+        User.objects.create_user(
+            username='user1', password='test1234'
+        )
+        User.objects.create_user(
+            username='user2', password='test1234'
+        )
+        self.user = self.client.login(username='user1', password='test1234')
+    
+    
+    def generate_photo_file(self):
+        img_data = BytesIO()
+        new_img = Image.new("RGB", (50, 50))
+        new_img.save(img_data, 'jpeg')
+        return SimpleUploadedFile("upload.jpg", img_data.getvalue())
+    
+    def create_post(self, caption):
+        userpost.objects.create(
+            author = auth.get_user(self.client),
+            posted_date = localtime,
+            caption = caption,
+            picture = self.generate_photo_file(),
+        )
+    
+
+    def test_break(self):
+        pass
+    
+    def test_load_post(self):
+        data = {
+            "count": '0',
+        }
+        call = self.client.get('/load_more_post', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        content = str(call.content)
+        self.assertTrue(len(content) > 1)
+
+    def test_load_post(self):
+        call = self.client.post('/load_post', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        content = str(call.content)
+        self.assertTrue(len(content) > 1)
+
+    def test_search_friends_call(self):
+        data = {
+            'person': 'user2',
+        }
+        call = self.client.post('/search_friends', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        content = str(call.content)
+        self.assertTrue('user2' in content)
+
+    def test_load_comments(self):
+        self.create_post("test 1")
+        post = userpost.objects.get(caption = "test 1")
+        comments_post.objects.create( 
+            text = "cool post",
+            author = auth.get_user(self.client),
+        )
+        comment = comments_post.objects.get(text = "cool post")
+        post.comments.add(comment)
+        self.assertTrue(post.comments.filter(text = "cool post").exists())
+        data = { 
+            "id_post": post.id 
+        }
+        call = self.client.get('/load_comments', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertContains(call, "cool post")
+
+    def test_load_all_comments(self):
+        self.create_post("test 2")
+        post = userpost.objects.get(caption = "test 2")
+        comments_post.objects.create( 
+            text = "cool post 2",
+            author = auth.get_user(self.client),
+        )
+        comment = comments_post.objects.get(text = "cool post 2")
+        post.comments.add(comment)
+        self.assertTrue(post.comments.filter(text = "cool post 2").exists())
+        data = { 
+            "id_post": post.id 
+        }
+        call = self.client.get('/load_all_comments', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertContains(call, "cool post 2")
+
+    def test_load_more_post(self): 
+        self.create_post("test 3")
+        data = { 
+            "count": '0'
+        }
+        call = self.client.get('/load_more_post', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertContains(call, "test 3")
+
+    def test_like_post(self):
+        self.create_post("test 4")
+        post = userpost.objects.get(caption = "test 4")
+        data = { 
+            "content_id": post.id
+        }
+        self.client.post('/like_post', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        post = userpost.objects.get(caption = "test 4")
+        likes = post.likes.all()
+        self.assertTrue(likes.filter(username = 'user1').exists())
+        # remove like 
+        self.client.post('/like_post', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        post = userpost.objects.get(caption = "test 4")
+        likes = post.likes.all()
+        self.assertFalse(likes.filter(username = 'user1').exists())
+
+    def test_comment_reply_pros(self):
+        self.create_post("test 5")
+        post = userpost.objects.get(caption = "test 5")
+
+        comments_post.objects.create( 
+            text = "cool post to reply to!",
+            author = auth.get_user(self.client),
+        )
+        post = userpost.objects.get(caption = "test 5")
+        first_comment = comments_post.objects.get(text = "cool post to reply to!")
+        post.comments.add(first_comment)
+
+        data = { 
+            "content_id": first_comment.id,
+            "text": "cool comment",
+        }
+        self.client.post('/comment_reply_pros', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertTrue(first_comment.comment_replies.filter(text = 'cool comment').exists())
+
+    def test_send_friend_request(self):
+        user_2 = User.objects.get(username='user2')
+        user_1 = User.objects.get(username='user1')
+        data = { 
+            "user_id_sent": user_2.username,
+        }
+        self.client.post('/send_friend_request', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertTrue(friend_request_model.objects.filter(request=user_1, sent=user_2).exists())
+
+    
+class test_intergration_main_devops(TestCase):
+
+    def setUp(self):
+        # set up a users 
+        User.objects.create_user(
+            username='user1', password='test1234'
+        )
+        User.objects.create_user(
+            username='user2', password='test1234'
+        )
+        self.user = self.client.login(username='user1', password='test1234')
+    # https://gist.github.com/guillaumepiot/817a70706587da3bd862835c59ef584e
+    # image upload test are strange but I got it this code from here 
+    def generate_photo_file(self):
+        img_data = BytesIO()
+        new_img = Image.new("RGB", (50, 50))
+        new_img.save(img_data, 'jpeg')
+        return SimpleUploadedFile("upload.jpg", img_data.getvalue())
+    
+    def create_post(self, caption):
+        userpost.objects.create(
+            author = auth.get_user(self.client),
+            posted_date = localtime,
+            caption = caption,
+            picture = self.generate_photo_file(),
+        )
+    def test_main_page_friend(self):
+        self.create_post("test 1")
+        code = self.client.get('/mainpage')
+        self.assertEqual(code.status_code, 200)
+        self.assertTrue("user2" in str(code.content))
+        user_2 = User.objects.get(username='user2')
+        data = { 
+            "user_id_sent": user_2.username,
+        }
+        self.client.post('/send_friend_request', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        code = self.client.get('/mainpage')
+        self.assertFalse("user2" in str(code.content))
