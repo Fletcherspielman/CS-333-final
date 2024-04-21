@@ -78,3 +78,29 @@ class post_view_testing(TestCase):
                      'confirm_password': 'test123!'
                     })
         self.assertFalse(User.objects.filter(first_name='Fletcherremake').exists())
+
+class test_intergration_cs333(TestCase):
+    def test_signup_login(self):
+        # failed login
+        code = self.client.post('/', {"username": "user1", "password": "1234"})
+        msg = code.context['messages']
+        self.assertTrue(len(msg) == 1)
+        # make account
+        data = {
+            "firstname": "test",
+            "lastname": "testme",
+            "username": "user1",
+            "email": "test@test.com",
+            "password": "1234",
+            "confirm_password": "1234",
+        }
+        code = self.client.post("/signup", data)
+        self.assertTrue(User.objects.filter(username="user1").exists())
+        self.client.post('/', {"username": "user1", "password": "1234"})
+        try:
+            msg = code.context['messages']
+            self.assertTrue(len(msg) == 0)
+        except:
+            pass
+        self.assertTrue(auth.get_user(self.client))
+

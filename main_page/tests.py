@@ -451,7 +451,6 @@ class test_intergration_main_devops(TestCase):
             picture = self.generate_photo_file(),
         )
     def test_main_page_friend(self):
-        self.create_post("test 1")
         code = self.client.get('/mainpage')
         self.assertEqual(code.status_code, 200)
         self.assertTrue("user2" in str(code.content))
@@ -462,3 +461,91 @@ class test_intergration_main_devops(TestCase):
         self.client.post('/send_friend_request', data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         code = self.client.get('/mainpage')
         self.assertFalse("user2" in str(code.content))
+
+    def test_main_page_post(self):
+        # check for post that is not real
+        code = self.client.get('/load_post')
+        self.assertFalse('test 7' in str(code.content))
+        # make the post and check for it
+        self.create_post("test 7")
+        code = self.client.get('/load_post')
+        self.assertTrue('test 7' in str(code.content))
+        post_id = userpost.objects.get(caption = "test 7")
+        # comment on the post
+        data = {
+            "content_id": post_id.pk,
+            "text": "cool post on this one"
+        }
+        self.client.post('/comment_post_pros', data)
+        self.assertTrue(comments_post.objects.filter(text="cool post on this one").exists())
+        data = {
+            "id_post": post_id.id
+        }
+        # remove the post and make sure it dosent come back
+        self.client.post('/delete_post', data)
+        code = self.client.get('/load_post')
+        self.assertFalse('test 7' in str(code.content))
+
+    def test_main_page_comments(self):
+        self.create_post("test 8")
+        post_id = userpost.objects.get(caption = "test 8")
+        data = {
+            "content_id": post_id.pk,
+            "text": "cool post to reply and make something cool out of!"
+        }
+        self.client.post('/comment_post_pros', data)
+        content = self.client.get('/load_comments', {"id_post": post_id.id})
+        self.assertTrue('cool post to reply and make something cool out of!' in str(content.content))
+        comment_id = comments_post.objects.get(text = "cool post to reply and make something cool out of!")
+        data = { 
+            "content_id": comment_id.id,
+            "text": "This will show up now too!"
+        }
+        self.client.post('/comment_reply_pros', data)
+        content = self.client.get('/load_comments', {"id_post": post_id.id})
+        self.assertTrue('This will show up now too!' in str(content.content))
+        data = { 
+            "id_comment": comment_id.id,
+        }
+        self.client.post('/delete_comments', data)
+        content = self.client.get('/load_comments', {"id_post": post_id.id})
+        self.assertFalse('This will show up now too!' in str(content.content))
+        self.assertFalse('cool post to reply and make something cool out of!' in str(content.content))
+
+    def test_main_page_reports(self):
+        User.objects.create_user(
+            username='user3', password='test1234'
+        )
+        user2 = User.objects.get(username = 'user2')
+        user3 = User.objects.get(username = 'user3')
+        self.create_post("test 9")
+        id_post = userpost.objects.get(caption = "test 9")
+        code = self.client.get('/load_post')
+        self.assertTrue('test 9' in str(code.content))
+        #comments
+        data = {
+            "content_id": id_post.pk,
+            "text": "A very bad comment!"
+        }
+        self.client.post('/comment_post_pros', data)
+        comment_code = self.client.get('/load_comments', {"id_post": id_post.id})
+        self.assertTrue("A very bad comment!" in str(comment_code.content))
+        comment = comments_post.objects.get(text = "A very bad comment!")
+        ReportComment.objects.create(user=user2, comment=comment)
+        ReportComment.objects.create(user=user3, comment=comment)
+        data = {
+            "id_comment": comment.id
+        }
+        self.client.post('/report_comment', data)
+        code = self.client.get('/load_post')
+        self.assertFalse('A very bad comment!' in str(code.content))
+        # user post
+        data = { 
+            "id_post": id_post.id
+        }
+        report_post.objects.create(user = user2, post=id_post)
+        report_post.objects.create(user = user3, post=id_post)
+        self.client.post('/report_post_ajax', data)
+        code = self.client.get('/load_post')
+        self.assertFalse('test 9' in str(code.content))
+        
