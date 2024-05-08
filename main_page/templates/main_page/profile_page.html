@@ -1,0 +1,193 @@
+{% extends "main_page/base.html" %}
+{% load image_return_profile %}
+
+{% block content %}
+{% load static %}
+<div class="container-fluid">
+    <div class="row g-4">
+        <div class="col-lg-2">
+            <br>
+            <br>
+            <br>
+            {% if name == request.user %}
+
+            <div class="card text-white bg-dark">
+                <div class="card-header">
+                    <p>Friend Request</p>
+                </div>
+                <div class="card-body">
+                    <div class="w-100">
+                        <div class="row d-flex flex-wrap align-items-center">
+                            {% for z in request.user.friend_sent.all|slice:":5" %}
+                            <div class="col-2"> <img style="width: 40px; height: 40px" src="{{ z.sent_name.profile_pic.user_profile_picture.url }}"></div>
+                            <div class="col">{{ z.sent_name.username }}</div>
+                            <div class="col col-auto"><button name="{{ z.id }}" id=type="button"
+                                    class="accept_friend button rounded-circle"><span
+                                        name="{{ z.id }}-color">&#10003;</span></button></div>
+                            {% empty %}
+                            <div class="col"> No new friend request</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8 col-lg-8 vstack gap-4">
+            {% csrf_token %}
+            <br>
+            <br>
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="row justify-content">
+                        <div class="col-md-auto">
+                            <img class="rounded-circle shadow-4-strong" style="width: 40px; height: 40px"
+                                src={{name.profile_pic.user_profile_picture.url}}>
+                        </div>
+                        <div class="col-md-auto">
+                            <p class="fs-2">{{name.username}}</p>
+                        </div>
+                        <div class="col-md-auto ms-auto">
+                            {% if name == request.user %}
+                                <a   href="{% url 'main_page:settings' %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-gear" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                                        <path
+                                            d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                                    </svg>
+                                </a>
+                            {% else %}
+                                {% if name in request.user.friends_user.friends.all %}
+                                    <button class="unfriend btn btn-lg text-white" type="button" name='{{ name }}'>
+                                        <p>Remove friend
+                                            <svg xmlns="http://www.w3.org/2000/svg" class='{{ name }}-color' width="32" height="32" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </p>
+                                    </button>
+                                {% else %}
+                                    {% if show %}
+                                        <button name="{{ name.username }}" type="button" class="add_friend btn btn-lg text-white" disabled>
+                                            <p>Add friend
+                                                <svg xmlns="http://www.w3.org/2000/svg" class='{{ name.id }}-color' width="32" height="32" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                                                    <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
+                                                </svg>
+                                            </p>
+                                        </button>
+                                    {% else %}
+                                    
+                                        <button name="{{ name.username }}" type="button" class="add_friend btn btn-lg text-white">
+                                            <p>Add friend
+                                                <svg xmlns="http://www.w3.org/2000/svg" class='{{ name.id }}-color' width="32" height="32" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                                                    <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
+                                                </svg>
+                                            </p>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-auto">
+                            {% comment %} <td class="">Friends: {{ name.friends_user.friends_total }}</td> {% endcomment %}
+                            <div class="col"><button class="text-white" style="background: none!important; border: none; padding: 0!important;" data-bs-toggle="modal" data-bs-target="#friends_list"> Friends: {{ name.friends_user.friends_total }} </button></div>
+                        </div>
+                        <div class="col-md-auto">
+                            <td class="">Post: {{ post_to_load|length}}</td>
+                        </div>
+                        <div class="col-md-auto">
+                            <td class="">Games: </td>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="Settings" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Settings</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <form method="POST" action="{% url 'main_page:profile_page' request.user.username %}" enctype="multipart/form-data">
+                                Profile Picture
+                                {% csrf_token %}
+                                {{ form_post_profile_pic.as_p }}
+                                <button type="submit" class="btn btn-dark" name="upload_profile_pic"
+                                    value="upload_profile_pic">
+                                    Upload Image </button>
+                                <a class="btn btn-dark" href="/logout_user" role="button">Logout</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% for photo in rang_rows %}
+            <div class="container-fluid p-0 text-white">
+                <div class="row">
+                    <div class="col align-self-center text-start">
+                        {% if error_post_to_load != 0 or forloop.counter0 != 0 %}
+                        {% image_return_profiles_id forloop.counter0 0 rows_cols as test %}
+                        <a href="{% url 'main_page:picture_page' test %}">
+                        <input type="image" class="img-fluid open_post"
+                            name="{% image_return_profiles_id forloop.counter0 0 rows_cols %}"
+                            src="{% image_return_profiles forloop.counter0 0 rows_cols %}"
+                        >
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col align-self-center text-start">
+                        {% if forloop.counter0 == rows and remainder > 1 or forloop.counter0 != rows %}
+                        {% image_return_profiles_id forloop.counter0 1 rows_cols as test %}
+                        <a href="{% url 'main_page:picture_page' test %}">
+                        <input type="image" class="img-fluid open_post"
+                            name="{% image_return_profiles_id forloop.counter0 1 rows_cols %}"
+                            src="{% image_return_profiles forloop.counter0 1 rows_cols %}">
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col align-self-center text-start">
+                        {% if forloop.counter0 == rows and remainder > 2 or forloop.counter0 != rows %}
+                        {% image_return_profiles_id forloop.counter0 2 rows_cols as test %}
+                        <a href="{% url 'main_page:picture_page' test %}">
+                        <input type="image" class="img-fluid open_post"
+                            name="{% image_return_profiles_id forloop.counter0 2 rows_cols %}"
+                            src="{% image_return_profiles forloop.counter0 2 rows_cols %}">
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-lg-2">
+            
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="friends_list" tabindex="-1" aria-labelledby="friends_list-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="friends_list-label">Friends</h5>
+            </div>
+            {% for x in name.friends_user.friends.all %}
+            <div class="w-100">
+                <div class="row d-flex flex-wrap align-items-center">
+                    <div class="col-2"> <img class="rounded-circle" style="width: 40px; height: 40px"
+                            src="{{ x.profile_pic.user_profile_picture.url }}"></div>
+                    <div class="col"><a style="text-decoration: none; color:white;" href="{% url 'main_page:profile_page' x.username %}"> {{ x.username }} </a></div>
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

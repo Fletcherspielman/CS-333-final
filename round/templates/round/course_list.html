@@ -1,0 +1,94 @@
+{% extends "round/base.html" %}
+
+
+{% block content %}
+{% load bootstrap_icons %}
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-warning align-items-center" role="alert">
+    <div>
+        {% bs_icon 'exclamation-triangle-fill' %}
+        {{ message }}
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="container body">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post" action="{% url 'select_course' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="state" class="card-bodyish">Select State:</label>
+                    <select class="form-control" id="state" name="state">
+                        <option value="">All States</option>
+                        {% for state in states %}
+                            <option value="{{ state }}">{{ state }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="course" class="card-bodyish">Please Select a Course:</label>
+                    <select class="form-control" id="course" name="course">
+                        {% for state, courses in state_courses.items %}
+                            {% for course in courses %}
+                                <option value="{{ course.course_id }}">{{ course.course_name }}</option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input class="btn-update-profile" type="submit" value="Select">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var stateDropdown = document.getElementById("state");
+        var courseDropdown = document.getElementById("course");
+        
+        function updateCourseOptions(selectedState) {
+            courseDropdown.innerHTML = "";
+            var defaultOption = document.createElement("option");
+            defaultOption.text = "Please Select a Course";
+            defaultOption.value = "";
+            courseDropdown.appendChild(defaultOption);
+    
+            if (!selectedState) {
+                {% for state, courses in state_courses.items %}
+                    {% for course in courses %}
+                        var option = document.createElement("option");
+                        option.text = "{{ course.course_name }}";
+                        option.value = "{{ course.course_id }}";
+                        courseDropdown.appendChild(option);
+                    {% endfor %}
+                {% endfor %}
+            } else {
+                {% for state, courses in state_courses.items %}
+                    if ("{{ state }}" === selectedState) {
+                        {% for course in courses %}
+                            var option = document.createElement("option");
+                            option.text = "{{ course.course_name }}";
+                            option.value = "{{ course.course_id }}";
+                            courseDropdown.appendChild(option);
+                        {% endfor %}
+                    }
+                {% endfor %}
+            }
+        }
+    
+        stateDropdown.addEventListener("change", function() {
+            var selectedState = stateDropdown.value;
+            updateCourseOptions(selectedState);
+        });
+    
+        updateCourseOptions(stateDropdown.value);
+    });
+    </script>
+
+{% endblock content %}

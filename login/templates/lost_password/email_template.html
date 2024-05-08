@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html land="en">
+
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    {% comment %} w3 schools header https://www.w3schools.com/howto/howto_css_style_header.asp {% endcomment %}
+    <header style ="background:#2b5800 !important; padding: 10px; text-align: center; color: white; font-size: 30px;">
+        <div style="text-align: center;">
+            <h3>Digicaddie</h3>  
+        </div>
+    </header>
+    <main>
+        <center>
+            <h3>Change your password</h3>
+            <h4>Please follow the link to change your password:</h4>
+            <a href="http://{{ domain }}{% url 'login:password_reset_confirm' uidb64=uid token=token %}" style="width: 25%; display: inline-block; background:#2b5800; text-decoration: none; color: white; padding: 20px;">Reset Password</a>
+            <h4>If you have recived this email by mistake please login and change your password</h4>
+        </center>
+    </main>
+</body>

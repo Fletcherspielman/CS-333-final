@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup page</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% load bootstrap_icons %}
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(17, 17, 17);
+        }
+    </style>
+</head>
+
+<body>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning align-items-center" role="alert">
+        <div>
+            {% bs_icon 'exclamation-triangle-fill' %}
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+
+    <div class="d-flex flex-column justify-content-center align-items-center min-vh-100">
+        <div class="row">
+            <form action="/signup" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="row">
+                    <div class="col">
+                        <button class="btn-load" type="submit"> Submit </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn-load" name="sign_in" value="sign_in">Sign in</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

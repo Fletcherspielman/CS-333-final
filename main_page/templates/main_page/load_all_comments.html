@@ -1,0 +1,49 @@
+{% for x in photo.comments.all %}
+<div class="row justify-content-start justify-content-between">
+    <div class="col-auto me-auto mh-100">
+        <img class="rounded-circle shadow-4-strong" style="width: 40px; height: 40px"
+            src={{x.author.profile_pic.user_profile_picture.url}}>
+    </div>
+    <div class="col comment-card ">
+        <div class="card-header d-flex align-items-center text-start justify-content-between">
+            <a style="text-decoration: none; color:white;" href="{% url 'main_page:profile_page' photo.author %}"> {{ x.author }}
+                Posted: {{ x.created|timesince }} ago </a>
+            <div class="dropdown" data-bs-toggle="dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                </svg>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="#">Report</a></li>
+                <li><a class="dropdown-item" href="#">Block
+                        Account</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <td class="">{{ x.text }} </td>
+        </div>
+        <div class="card-footer">
+            {% if x.id in comments_likes %}
+            <button class="like_comment" style="padding: 0; border: none; background: none;" name="{{ x.id }}">
+                <svg name="{{ x.id }}-comment" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red"
+                    class="bi bi-heart-fill" viewBox="0 0 16 16">
+                    <path name="{{ x.id }}-path-comment" fill-rule="evenodd"
+                        d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+                    <title>Comment</title>
+                </svg>
+            </button>
+            {% else %}
+            <button class="like_comment" style="padding: 0; border: none; background: none;" name="{{ x.id }}">
+                <svg name="{{ x.id }}-comment" style="fill: currentColor;" xmlns="http://www.w3.org/2000/svg" width="16"
+                    height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                    <path name="{{ x.id }}-path-comment"
+                        d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15" />
+                    <title>Like</title>
+                </svg>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
